@@ -1,6 +1,6 @@
 package com.bot.eshop.amazon.service;
 
-import com.bot.config.Urls;
+import com.bot.config.Config;
 import com.bot.eshop.amazon.model.AmazonProduct;
 import com.bot.eshop.amazon.model.AmazonSaleProduct;
 import com.bot.eshop.amazon.repository.AmazonProductRepository;
@@ -27,7 +27,7 @@ import java.util.List;
 public class AmazonService extends ScanProductService {
 
     @NonNull
-    private final Urls urls;
+    private final Config config;
 
     @Autowired
     private AmazonProductRepository amazonProductRepository;
@@ -53,7 +53,7 @@ public class AmazonService extends ScanProductService {
     public void scanProducts() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         WebDriver driver = new ChromeDriver(loadChromeConfig());
 
-        for (String url : urls.getAmazon()) {
+        for (String url : config.getAmazon()) {
             log.info("Loading web page!");
             driver.get(url);
             log.info("Web page loaded!");

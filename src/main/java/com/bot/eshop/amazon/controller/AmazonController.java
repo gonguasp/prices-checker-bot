@@ -23,6 +23,7 @@ public class AmazonController {
 
     @GetMapping("/amazon/sales")
     public List<AmazonSaleProduct> getSales() {
+        amazonService.cleanAmazonSaleProductsDB();
         return amazonService.getSales();
     }
 }

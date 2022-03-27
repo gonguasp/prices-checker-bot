@@ -1,6 +1,6 @@
 package com.bot.eshop.pccomponentes.service;
 
-import com.bot.config.Urls;
+import com.bot.config.Config;
 import com.bot.eshop.pccomponentes.model.PcComponentesProduct;
 import com.bot.eshop.pccomponentes.model.PcComponentesSaleProduct;
 import com.bot.eshop.pccomponentes.repository.PcComponentesProductRepository;
@@ -34,7 +34,7 @@ public class PcComponentesService extends ScanProductService {
     private PcComponentesSaleProductRepository pcComponentesSaleProductRepository;
 
     @NonNull
-    private final Urls urls;
+    private final Config config;
 
     @Transactional
     public void cleanPcComponentesSaleProductsDB() {
@@ -44,7 +44,7 @@ public class PcComponentesService extends ScanProductService {
     }
 
     public void scanProducts(String urlPart) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        String url = urls.getPcComponentes().get(urlPart).toString();
+        String url = config.getPcComponentes().get(urlPart).toString();
         WebDriver driver = getDriver(url, false, true);
         manageProducts(driver.findElements(By.className("col-xs-6")));
         driver.quit();
@@ -61,7 +61,7 @@ public class PcComponentesService extends ScanProductService {
     public void scanFocusedProducts() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         WebDriver driver = null;
 
-        for (String url : ((LinkedHashMap<String, String>) urls.getPcComponentes().get("focus-on-components")).values()) {
+        for (String url : ((LinkedHashMap<String, String>) config.getPcComponentes().get("focus-on-components")).values()) {
             driver = getDriver(url, true, false);
             WebElement productInfo = driver.findElement(By.id("add-cart"));
 

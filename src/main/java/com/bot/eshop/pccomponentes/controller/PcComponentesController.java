@@ -41,6 +41,7 @@ public class PcComponentesController {
 
     @GetMapping("/pccomponentes/sales")
     public List<PcComponentesSaleProduct> getSales() {
+        pcComponentesService.cleanPcComponentesSaleProductsDB();
         return pcComponentesService.getSales();
     }
 }

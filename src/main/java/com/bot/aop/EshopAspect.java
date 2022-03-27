@@ -2,7 +2,9 @@ package com.bot.aop;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
@@ -23,5 +25,16 @@ public class EshopAspect {
     @After("execution(* com.bot.eshop.*.service.*Service.*(..))")
     public void afterMethodsAmazonService(JoinPoint jp) {
         log.info("Finished method " + jp.getSignature().getName());
+    }
+
+    @Around("execution(* com.bot.service.IndexService.executeAll(..))")
+    public void aroundExecuteAll(ProceedingJoinPoint pjp) throws Throwable {
+        log.info("");
+        log.info("EXECUTING ALL SCANS!");
+        log.info("");
+        pjp.proceed();
+        log.info("");
+        log.info("FINISHED ALL SCANS!");
+        log.info("");
     }
 }

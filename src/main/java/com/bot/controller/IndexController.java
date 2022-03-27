@@ -1,6 +1,6 @@
 package com.bot.controller;
 
-import com.bot.config.Urls;
+import com.bot.config.Config;
 import com.bot.service.IndexService;
 import lombok.Data;
 import lombok.NonNull;
@@ -17,14 +17,14 @@ import java.util.Map;
 public class IndexController {
 
     @NonNull
-    private final Urls urls;
+    private final Config config;
 
     @Autowired
     private IndexService indexService;
 
     @GetMapping("/urls")
-    public Urls getAllUrls() {
-        return urls;
+    public Config getAllUrls() {
+        return config;
     }
 
     @GetMapping("/endpoints")

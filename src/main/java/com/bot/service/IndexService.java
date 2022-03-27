@@ -7,6 +7,7 @@ import com.bot.eshop.pccomponentes.controller.PcComponentesController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
@@ -53,6 +54,7 @@ public class IndexService {
         return Endpoints.endpoints;
     }
 
+    @Scheduled(fixedDelay = 600000, initialDelay = 1000)
     public String executeAll() throws InvocationTargetException, IllegalAccessException {
         final String notExecuteMethod = "getSales";
         for (Method method : pcComponentesController.getClass().getDeclaredMethods()) {
