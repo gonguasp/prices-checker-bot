@@ -20,13 +20,13 @@ public class ScanProductService {
 
     private final String findByName = "findByName";
     private final String save = "save";
+    private final double minDifference = 10;
 
     protected ChromeOptions loadChromeConfig() {
         System.setProperty("webdriver.chrome.driver", "src/main/resources/static/chromedriver.exe");
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
         options.addArguments("--disable-blink-features=AutomationControlled");
-        options.addArguments("window-size=1280,800");
         options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36");
         return options;
     }
@@ -66,8 +66,8 @@ public class ScanProductService {
         if(((Optional<Product>) productOptional).isPresent()) {
             Product productSaved = ((Optional<Product>) productOptional).get();
             log.info(productSaved.toString());
-            Double difference = productSaved.getPrice() - product.getPrice();
-            if(difference > 10) {
+            double difference = productSaved.getPrice() - product.getPrice();
+            if(difference > minDifference) {
                 Object saleProductOptional = findByNameProductSale.invoke(saleProductRepository, product.getName());
                 if(((Optional<SaleProduct>) saleProductOptional).isPresent()) {
                     SaleProduct saleProduct = ((Optional<SaleProduct>) saleProductOptional).get();
