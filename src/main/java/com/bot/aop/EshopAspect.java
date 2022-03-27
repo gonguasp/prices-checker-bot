@@ -1,4 +1,4 @@
-package com.bot.eshop.pccomponentes.aspect;
+package com.bot.aop;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -12,14 +12,15 @@ import java.util.Arrays;
 @Aspect
 @Component
 @Slf4j
-public class PcComponentesAspect {
+public class EshopAspect {
 
-    @Before("execution(* com.bot.eshop.pccomponentes.service.PcComponentesService.*(..))")
+    @Before("execution(* com.bot.eshop.*.service.*Service.*(..))")
     public void beforeMethodsAmazonService(JoinPoint jp) {
-        log.info("Executing method " + jp.getSignature().getName() + " with " + (jp.getArgs().length == 0 ? "no arguments" : "arguments: " + Arrays.asList(jp.getArgs())));
+        log.info("Executing method " + jp.getSignature().getName() + " with " +
+                (jp.getArgs().length == 0 ? "no arguments" : "arguments: " + Arrays.asList(jp.getArgs())));
     }
 
-    @After("execution(* com.bot.eshop.pccomponentes.service.PcComponentesService.*(..))")
+    @After("execution(* com.bot.eshop.*.service.*Service.*(..))")
     public void afterMethodsAmazonService(JoinPoint jp) {
         log.info("Finished method " + jp.getSignature().getName());
     }
