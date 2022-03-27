@@ -1,0 +1,43 @@
+# db
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/bot?serverTimezone=UTC
+    username: root
+    password: 1234
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+    generate-ddl: true
+
+#management:
+ # endpoints:
+      #   web:
+      #exposure:
+    # include: *
+
+urls:
+  pc-componentes:
+    motherboard: https://www.pccomponentes.com/placas-base/atx/socket-lga-1200
+    processor: https://www.pccomponentes.com/procesadores/intel-i5/socket-lga-1200
+    tower: https://www.pccomponentes.com/cajas-pc/corsair
+    focus-on-components:
+      - https://www.pccomponentes.com/gigabyte-z590-gaming-x
+      - https://www.pccomponentes.com/intel-core-i5-11400f-26-ghz
+      - https://www.pccomponentes.com/corsair-4000d-airflow-cristal-templado-usb-31-blanca
+
+  amazon:
+    - https://www.amazon.es/Noctua-NH-L9i-chromax-black-Disipador-Perfil/dp/B07Y892M38/ref=sr_1_2?__mk_es_ES=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=2XBN7LWHX5A92&keywords=noctua+chromax+cpu+fan+1200&qid=1648316887&sprefix=noctua+chromax+cpu+fan+1200%2Caps%2C77&sr=8-2
+    - https://www.amazon.es/Intel-i5-11400F-procesador-Smart-Cache/dp/B08TX4MCKC/ref=sr_1_1?__mk_es_ES=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1V78N0S995446&keywords=intel+i5+11400f&qid=1648324727&s=computers&sprefix=intel+i5+11400f%2Ccomputers%2C137&sr=1-1
+    - https://www.amazon.es/Gigabyte-Z590-Gaming-Placa-Express/dp/B08XNKLGS4/ref=sr_1_1?__mk_es_ES=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=2HDRPVXQINZ21&keywords=Gigabyte+Z590+GAMING+X&qid=1648325003&s=computers&sprefix=gigabyte+z590+gaming+x%2Ccomputers%2C100&sr=1-1
+    - https://www.amazon.es/Corsair-Semitorre-Templado-Ventiladores-Incluidos/dp/B08C74694Z/ref=sr_1_1?__mk_es_ES=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=3EXGYZ0CNMSJY&keywords=Corsair%2B4000D%2BAirflow&qid=1648335136&sprefix=corsair%2B4000d%2Bairflow%2Caps%2C101&sr=8-1&th=1
+
+
+
+# debug sql
+#spring.jpa.properties.hibernate.show_sql=true
+#spring.jpa.properties.hibernate.use_sql_comments=true
+#spring.jpa.properties.hibernate.fomat_sql=true
+#spring.jpa.properties.hibernate.type=trace
+#spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
+#spring.jpa.generate-ddl=true
