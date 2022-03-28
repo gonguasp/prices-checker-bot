@@ -52,12 +52,12 @@ public class EmailEventListener implements ApplicationListener<EmailEvent> {
     }
 
     private void sendEmail(String contentTextPlain) throws IOException {
-        Email fromTo = new Email("cristiangonzalezguasp@gmail.com");
+        Email fromTo = new Email(replaceMeWithYourEmail);
         String subject = "Alert sale product/s";
         Content content = new Content("text/html", contentTextPlain);
         Mail mail = new Mail(fromTo, subject, fromTo, content);
 
-        SendGrid sg = new SendGrid("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");
+        SendGrid sg = new SendGrid(replaceMeWithYourApi);
         Request request = new Request();
         request.setMethod(com.sendgrid.Method.POST);
         request.setEndpoint("mail/send");
