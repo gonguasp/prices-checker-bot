@@ -32,16 +32,20 @@ public class EmailEventListener implements ApplicationListener<EmailEvent> {
     @SneakyThrows
     @Override
     public void onApplicationEvent(EmailEvent event) {
-        log.info("Received email event - " + event.getMessage());
+        log.info("Received email event.");
 
         List<PcComponentesSaleProduct> pcComponentesSaleProductList = pcComponentesSaleProductRepository.findAll();
         List<AmazonSaleProduct> amazonSaleProductList = amazonSaleProductRepository.findAll();
 
         if(!pcComponentesSaleProductList.isEmpty() || !amazonSaleProductList.isEmpty()) {
-            log.info("There are some sales, sending email.");
-            sendEmail(formatEmailContent(
-                    pcComponentesSaleProductList,
-                    amazonSaleProductList));
+            if(EmailEvent.areNewSales) {
+                log.info("There are some new sales. Sending email.");
+                sendEmail(formatEmailContent(
+                        pcComponentesSaleProductList,
+                        amazonSaleProductList));
+            } else {
+                log.info("There are not any new sales.");
+            }
         } else {
             log.info("There are not any sales.");
         }
@@ -64,6 +68,8 @@ public class EmailEventListener implements ApplicationListener<EmailEvent> {
                 System.lineSeparator() + response.getStatusCode() +
                 System.lineSeparator() + response.getBody() +
                 System.lineSeparator() + response.getHeaders());
+
+        EmailEvent.areNewSales = false;
     }
 
     private String formatEmailContent(List<PcComponentesSaleProduct> pcComponentesSaleProductList, List<AmazonSaleProduct> amazonSaleProductList) {

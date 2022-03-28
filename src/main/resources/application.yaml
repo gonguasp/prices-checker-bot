@@ -10,6 +10,7 @@ spring:
         dialect: org.hibernate.dialect.MySQL5Dialect
     generate-ddl: true
 
+# urls
 config:
   pc-componentes:
     motherboard: https://www.pccomponentes.com/placas-base/atx/socket-lga-1200

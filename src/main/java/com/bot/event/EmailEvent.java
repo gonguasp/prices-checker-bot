@@ -5,6 +5,8 @@ import org.springframework.context.ApplicationEvent;
 
 public class EmailEvent extends ApplicationEvent {
 
+    public static boolean areNewSales = true;
+
     private String message;
 
     public EmailEvent(Object source, String message) {

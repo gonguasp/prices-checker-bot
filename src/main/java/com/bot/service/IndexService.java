@@ -4,6 +4,7 @@ import com.bot.BotApplication;
 import com.bot.config.Endpoints;
 import com.bot.eshop.amazon.controller.AmazonController;
 import com.bot.eshop.pccomponentes.controller.PcComponentesController;
+import com.bot.event.EmailEvent;
 import com.bot.event.EmailEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,11 @@ public class IndexService {
 
         emailEventPublisher.publishCustomEvent("");
         return "DONE";
+    }
+
+    @Scheduled(cron = "0 0 0 * * *", zone = "Europe/Paris")
+    public void resetEmailSends() {
+        EmailEvent.areNewSales = true;
     }
 
 }
