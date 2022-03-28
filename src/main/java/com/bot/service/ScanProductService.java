@@ -1,5 +1,9 @@
 package com.bot.service;
 
+import com.bot.eshop.amazon.model.AmazonProduct;
+import com.bot.eshop.amazon.model.AmazonSaleProduct;
+import com.bot.eshop.pccomponentes.model.PcComponentesProduct;
+import com.bot.eshop.pccomponentes.model.PcComponentesSaleProduct;
 import com.bot.model.Product;
 import com.bot.model.SaleProduct;
 import lombok.extern.slf4j.Slf4j;
@@ -10,16 +14,19 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import javax.transaction.Transactional;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.Optional;
 
 @Slf4j
+@Transactional
 public class ScanProductService {
 
     private final String findByName = "findByName";
     private final String save = "save";
+    private final String removeById = "removeById";
     private final double minDifference = 10;
 
     protected ChromeOptions loadChromeConfig() {
@@ -59,32 +66,50 @@ public class ScanProductService {
         Method findByNameProduct = productRepository.getClass().getMethod(findByName, String.class);
         Method saveProduct = JpaRepository.class.getMethod(save, Object.class);
         Method findByNameProductSale = saleProductRepository.getClass().getMethod(findByName, String.class);
-        Method saveSaleProduct = JpaRepository.class.getMethod(save, Object.class);
 
-        Object productOptional = findByNameProduct.invoke(productRepository, product.getName());
+        Optional<Product> productOptional = (Optional<Product>) findByNameProduct.invoke(productRepository, product.getName());
 
-        if(((Optional<Product>) productOptional).isPresent()) {
-            Product productSaved = ((Optional<Product>) productOptional).get();
+        if(productOptional.isPresent()) {
+            Product productSaved = productOptional.get();
             log.info(productSaved.toString());
             double difference = productSaved.getPrice() - product.getPrice();
-            if(difference > minDifference) {
-                Object saleProductOptional = findByNameProductSale.invoke(saleProductRepository, product.getName());
-                if(((Optional<SaleProduct>) saleProductOptional).isPresent()) {
-                    SaleProduct saleProduct = ((Optional<SaleProduct>) saleProductOptional).get();
-                    saleProduct.setCurrentPrice(product.getPrice());
-                    saleProduct.setDiscount(difference);
-                    saleProduct.setCreated(Instant.now());
-                    saveSaleProduct.invoke(saleProductRepository, saleProduct);
-                } else {
-                    saveSaleProduct.invoke(saleProductRepository, new SaleProduct(
-                            product,
-                            product.getPrice(),
-                            product.getHref(),
-                            difference));
-                }
-            }
+            Optional<SaleProduct> saleProductOptional = (Optional<SaleProduct>) findByNameProductSale.invoke(saleProductRepository, product.getName());
+            manageSaleProduct(difference, saleProductOptional, product, saleProductRepository);
         } else {
             log.info(saveProduct.invoke(productRepository, product).toString());
+        }
+    }
+
+    protected void manageSaleProduct(double difference, Optional<SaleProduct> saleProductOptional, Product product, Object saleProductRepository) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        Method saveSaleProduct = JpaRepository.class.getMethod(save, Object.class);
+        Method removeByIdProductSale = saleProductRepository.getClass().getMethod(removeById, long.class);
+
+        if(difference > minDifference) {
+            if(saleProductOptional.isPresent()) {
+                SaleProduct saleProduct = saleProductOptional.get();
+                saleProduct.setCurrentPrice(product.getPrice());
+                saleProduct.setDiscount(difference);
+                saleProduct.setCreated(Instant.now());
+                saveSaleProduct.invoke(saleProductRepository, saleProduct);
+            } else {
+                SaleProduct saleProduct;
+                if(product instanceof PcComponentesProduct) {
+                    saleProduct = new PcComponentesSaleProduct((PcComponentesProduct) product,
+                            product.getPrice(),
+                            product.getHref(),
+                            difference);
+                } else {
+                    saleProduct = new AmazonSaleProduct((AmazonProduct) product,
+                            product.getPrice(),
+                            product.getHref(),
+                            difference);
+                }
+                saveSaleProduct.invoke(saleProductRepository, saleProduct);
+            }
+        } else {
+            if(saleProductOptional.isPresent()) {
+                removeByIdProductSale.invoke(saleProductRepository, saleProductOptional.get().getId());
+            }
         }
     }
 }

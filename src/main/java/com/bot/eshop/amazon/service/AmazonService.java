@@ -18,12 +18,12 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Calendar;
 import java.util.List;
 
 @Service
 @Slf4j
 @Data
+@Transactional
 public class AmazonService extends ScanProductService {
 
     @NonNull
@@ -34,13 +34,6 @@ public class AmazonService extends ScanProductService {
 
     @Autowired
     private AmazonSaleProductRepository amazonSaleProductRepository;
-
-    @Transactional
-    public void cleanAmazonSaleProductsDB() {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.WEEK_OF_YEAR, -1);
-        amazonSaleProductRepository.removeAllByCreatedBefore(cal.toInstant());
-    }
 
     public List<AmazonSaleProduct> getSales() {
         List<AmazonSaleProduct> amazonSaleProductList = amazonSaleProductRepository.findAll();

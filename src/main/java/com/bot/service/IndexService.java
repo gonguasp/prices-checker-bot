@@ -4,6 +4,7 @@ import com.bot.BotApplication;
 import com.bot.config.Endpoints;
 import com.bot.eshop.amazon.controller.AmazonController;
 import com.bot.eshop.pccomponentes.controller.PcComponentesController;
+import com.bot.event.EmailEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -14,12 +15,10 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -30,6 +29,9 @@ public class IndexService {
 
     @Autowired
     private AmazonController amazonController;
+
+    @Autowired
+    private EmailEventPublisher emailEventPublisher;
 
     public Map<String, List<String>> fillEndpoints() {
         if(Endpoints.endpoints == null) {
@@ -55,7 +57,7 @@ public class IndexService {
     }
 
     @Scheduled(fixedDelay = 600000, initialDelay = 1000)
-    public String executeAll() throws InvocationTargetException, IllegalAccessException {
+    public String executeAll() throws InvocationTargetException, IllegalAccessException, IOException {
         final String notExecuteMethod = "getSales";
         for (Method method : pcComponentesController.getClass().getDeclaredMethods()) {
             if(!notExecuteMethod.equals(method.getName())) {
@@ -69,6 +71,8 @@ public class IndexService {
             }
         }
 
+        emailEventPublisher.publishCustomEvent("");
         return "DONE";
     }
+
 }

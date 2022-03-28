@@ -40,4 +40,13 @@ public class PcComponentesSaleProduct extends SaleProduct {
                 pcComponentesProduct.isFocus()
         );
     }
+
+    @Override
+    public String toString() {
+        return this.category + " " + this.brand + " " + this.currentPrice + " € " + this.name + " " + this.href;
+    }
+
+    public String toStringHtml() {
+        return "<p> - " + this.toString() + "</p>";
+    }
 }

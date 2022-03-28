@@ -18,13 +18,13 @@ import org.openqa.selenium.support.ui.Select;
 
 import javax.transaction.Transactional;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 @Service
 @Slf4j
 @Data
+@Transactional
 public class PcComponentesService extends ScanProductService {
 
     @Autowired
@@ -35,13 +35,6 @@ public class PcComponentesService extends ScanProductService {
 
     @NonNull
     private final Config config;
-
-    @Transactional
-    public void cleanPcComponentesSaleProductsDB() {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.WEEK_OF_YEAR, -1);
-        pcComponentesSaleProductRepository.removeAllByCreatedBefore(cal.toInstant());
-    }
 
     public void scanProducts(String urlPart) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         String url = config.getPcComponentes().get(urlPart).toString();
@@ -100,7 +93,7 @@ public class PcComponentesService extends ScanProductService {
         return driver;
     }
 
-    private void manageProducts(List<WebElement> webElementList) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    protected void manageProducts(List<WebElement> webElementList) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         for (WebElement divElement : webElementList) {
             WebElement articleElement = divElement.findElement(By.tagName("article"));
             String productName = articleElement.getAttribute("data-name");

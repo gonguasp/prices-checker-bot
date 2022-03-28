@@ -18,7 +18,8 @@ public class EshopAspect {
 
     @Before("execution(* com.bot.eshop.*.service.*Service.*(..))")
     public void beforeMethodsAmazonService(JoinPoint jp) {
-        log.info("Executing method " + jp.getSignature().getName() + " with " +
+        log.info(jp.getTarget().getClass().getName().replace(jp.getTarget().getClass().getPackageName() + ".", "") +
+                " executing method " + jp.getSignature().getName() + " with " +
                 (jp.getArgs().length == 0 ? "no arguments" : "arguments: " + Arrays.asList(jp.getArgs())));
     }
 
