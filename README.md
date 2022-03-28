@@ -7,5 +7,5 @@
 * To config the email sending, create an account in SendGrid and config it.
 
 ## More info and demostration in 
-https://www.youtube.com/watch?v=0lyOcNb_Y_w
+https://www.youtube.com/watch?v=4fx8QFcRkms
  
