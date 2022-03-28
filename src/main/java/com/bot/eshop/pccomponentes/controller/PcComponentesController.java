@@ -33,6 +33,12 @@ public class PcComponentesController {
         return "DONE";
     }
 
+    @GetMapping("/pccomponentes/graphic-card")
+    public String scanGraphicCardPrices() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        pcComponentesService.scanProducts("graphic-card");
+        return "DONE";
+    }
+
     @GetMapping("/pccomponentes/focused-products")
     public String scanFocusedProducts() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         pcComponentesService.scanFocusedProducts();
