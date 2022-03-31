@@ -1,9 +1,9 @@
 # db
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/bot?serverTimezone=UTC
-    username: root
-    password: 1234
+    url: REPLACE_ME
+    username: REPLACE_ME
+    password: REPLACE_ME
   jpa:
     properties:
       hibernate:
@@ -37,7 +37,7 @@ alert:
 telegram:
   bot:
     name: prices_checker_bot
-    token:
+    token: REPLACE_ME
     chat-id: -721401840
     initialDelay: 5
     period: 10
@@ -45,6 +45,6 @@ telegram:
 
 # email
 email:
-  email: cristiangonzalezguasp@gmail.com
-  token:
+  email: REPLACE_ME
+  token: REPLACE_ME
   subject: Alert sale product/s
