@@ -6,7 +6,6 @@ import com.bot.eshop.amazon.controller.AmazonController;
 import com.bot.eshop.pccomponentes.controller.PcComponentesController;
 import com.bot.event.AlertEvent;
 import com.bot.event.AlertEventPublisher;
-import com.bot.event.alert.telegram.PricesCheckerBot;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;

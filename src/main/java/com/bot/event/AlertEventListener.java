@@ -1,11 +1,8 @@
 package com.bot.event;
 
-import com.bot.eshop.amazon.model.AmazonSaleProduct;
-import com.bot.eshop.amazon.repository.AmazonSaleProductRepository;
-import com.bot.eshop.pccomponentes.model.PcComponentesSaleProduct;
-import com.bot.eshop.pccomponentes.repository.PcComponentesSaleProductRepository;
 import com.bot.event.alert.email.Email;
 import com.bot.event.alert.telegram.PricesCheckerBot;
+import com.bot.service.SaleService;
 import com.sendgrid.Response;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +12,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -29,10 +25,7 @@ public class AlertEventListener implements ApplicationListener<AlertEvent> {
     private boolean alertTelegram;
 
     @Autowired
-    private PcComponentesSaleProductRepository pcComponentesSaleProductRepository;
-
-    @Autowired
-    private AmazonSaleProductRepository amazonSaleProductRepository;
+    private SaleService saleService;
 
     @Autowired
     private Email email;
@@ -45,7 +38,7 @@ public class AlertEventListener implements ApplicationListener<AlertEvent> {
     public void onApplicationEvent(AlertEvent event) {
         log.info("Received event.");
 
-        List<String> saleProductList = getSales(pcComponentesSaleProductRepository.findAll(), amazonSaleProductRepository.findAll());
+        List<String> saleProductList = saleService.getSales();
 
         if(AlertEvent.areNewSales && !saleProductList.isEmpty()) {
             log.info("There are some new sales.");
@@ -68,19 +61,5 @@ public class AlertEventListener implements ApplicationListener<AlertEvent> {
         if(alertTelegram) {
             pricesCheckerBot.sendSales(saleProductList);
         }
-    }
-
-    private List<String> getSales(List<PcComponentesSaleProduct> pcComponentesSaleProductList, List<AmazonSaleProduct> amazonSaleProductList) {
-        List<String> listSales = new ArrayList<>();
-
-        for (PcComponentesSaleProduct saleProduct : pcComponentesSaleProductList) {
-            listSales.add(saleProduct.toString());
-        }
-
-        for (AmazonSaleProduct saleProduct : amazonSaleProductList) {
-            listSales.add(saleProduct.toString());
-        }
-
-        return listSales;
     }
 }
