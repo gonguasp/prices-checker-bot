@@ -55,17 +55,27 @@ public class IndexService {
         return Endpoints.endpoints;
     }
 
+    public boolean resetAll() {
+        pcComponentesController.reset();
+        amazonController.reset();
+        return true;
+    }
+
     @Scheduled(fixedDelay = 600000, initialDelay = 1000)
     public String executeAll() throws InvocationTargetException, IllegalAccessException {
-        final String notExecuteMethod = "getSales";
-        for (Method method : pcComponentesController.getClass().getDeclaredMethods()) {
-            if(!notExecuteMethod.equals(method.getName())) {
+        final List<String> notExecuteMethods = List.of("getSales", "reset");
+        Method[] methods = Arrays.asList(pcComponentesController.getClass().getDeclaredMethods())
+                .stream()
+                .sorted(Comparator.comparing(Method::getName))
+                .toArray(Method[]::new);
+        for (Method method : methods) {
+            if(!notExecuteMethods.contains(method.getName())) {
                 method.invoke(pcComponentesController);
             }
         }
 
         for (Method method : amazonController.getClass().getDeclaredMethods()) {
-            if(!notExecuteMethod.equals(method.getName())) {
+            if(!notExecuteMethods.contains(method.getName())) {
                 method.invoke(amazonController);
             }
         }

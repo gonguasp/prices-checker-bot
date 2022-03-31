@@ -34,7 +34,12 @@ public class IndexController {
     }
 
     @GetMapping("/scan-all")
-    public String scanAll() throws InvocationTargetException, IllegalAccessException, IOException {
+    public String scanAll() throws InvocationTargetException, IllegalAccessException {
         return indexService.executeAll();
+    }
+
+    @GetMapping("/reset-all")
+    public boolean resetAll() {
+        return indexService.resetAll();
     }
 }
