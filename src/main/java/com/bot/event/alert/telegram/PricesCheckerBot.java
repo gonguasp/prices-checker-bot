@@ -1,5 +1,6 @@
 package com.bot.event.alert.telegram;
 
+import com.bot.service.IndexService;
 import com.bot.service.SaleService;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -14,6 +15,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
@@ -46,6 +49,12 @@ public class PricesCheckerBot extends TelegramLongPollingBot {
     @Autowired
     private SaleService saleService;
 
+    @Autowired
+    private IndexService indexService;
+
+    private static final String ACCEPT = "Accept";
+    private static final String CANCEL = "Cancel";
+
     @PostConstruct
     public void registerBot() throws TelegramApiException {
         TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
@@ -62,26 +71,41 @@ public class PricesCheckerBot extends TelegramLongPollingBot {
         return token;
     }
 
+    @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
         if(update.hasMessage() && update.getMessage().hasText()) {
-            String message = update.getMessage().getText();
-            if("/sales".equals(message)) {
-                sendMessage(formatSalesMessage(saleService.getSales()));
+            switch (update.getMessage().getText()) {
+                case "/sales":
+                    sendMessage(formatSalesMessage(saleService.getSales()));
+                    break;
+                case "/scan":
+                    indexService.executeAll();
+                    sendMessage("Scanning all products done");
+                    break;
+                case "/reset":
+                    askForResetAll();
+                    break;
+                case "/help":
+                    sendMessage("/scan: scan all products" + System.lineSeparator() + System.lineSeparator() +
+                            "/sales: get all sales" + System.lineSeparator() + System.lineSeparator() +
+                            "/reset: delete all data from database");
+                    break;
+                default:
+                    sendMessage("Command not found!");
+                    break;
             }
+        } else if(update.hasCallbackQuery()) {
+            String data = update.getCallbackQuery().getData();
+            if(ACCEPT.equals(data)) {
+                indexService.executeAll();
+                sendMessage("All data clear");
+            } else if(CANCEL.equals(data)) {
+                sendMessage("Canceled reset command");
+            }
+
+            execute(new DeleteMessage(chatId, update.getCallbackQuery().getMessage().getMessageId()));
         }
-    }
-
-    @SneakyThrows
-    private Message sendMessage(String messageContent) {
-        log.info("Sending telegram message");
-        return execute(new SendMessage(chatId, messageContent));
-    }
-
-    @SneakyThrows
-    private void removeMessage(Message message) {
-        log.info("removing telegram message");
-        execute(new DeleteMessage(chatId, message.getMessageId()));
     }
 
     public void sendSales(List<String> saleProductList) {
@@ -104,6 +128,29 @@ public class PricesCheckerBot extends TelegramLongPollingBot {
             };
             scheduler.schedule(canceller, delayCanceler, TimeUnit.MINUTES);
         }
+    }
+
+    private void askForResetAll() throws TelegramApiException {
+        SendMessage sendMessage = new SendMessage(chatId, "This will delete all data in database. Are you sure?");
+        InlineKeyboardButton buttonAccept = new InlineKeyboardButton(ACCEPT);
+        InlineKeyboardButton buttonCancel = new InlineKeyboardButton(CANCEL);
+        buttonAccept.setCallbackData(ACCEPT);
+        buttonCancel.setCallbackData(CANCEL);
+        List<InlineKeyboardButton> inlineKeyboardButtonList = List.of(buttonAccept, buttonCancel);
+        sendMessage.setReplyMarkup(new InlineKeyboardMarkup(List.of(inlineKeyboardButtonList)));
+        execute(sendMessage);
+    }
+
+    @SneakyThrows
+    private Message sendMessage(String messageContent) {
+        log.info("Sending telegram message");
+        return execute(new SendMessage(chatId, messageContent));
+    }
+
+    @SneakyThrows
+    private void removeMessage(Message message) {
+        log.info("Removing telegram message");
+        execute(new DeleteMessage(chatId, message.getMessageId()));
     }
 
     private String formatSalesMessage(List<String> saleProductList) {
