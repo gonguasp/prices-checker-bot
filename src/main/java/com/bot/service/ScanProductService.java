@@ -4,7 +4,7 @@ import com.bot.eshop.amazon.model.AmazonProduct;
 import com.bot.eshop.amazon.model.AmazonSaleProduct;
 import com.bot.eshop.pccomponentes.model.PcComponentesProduct;
 import com.bot.eshop.pccomponentes.model.PcComponentesSaleProduct;
-import com.bot.event.EmailEvent;
+import com.bot.event.AlertEvent;
 import com.bot.model.Product;
 import com.bot.model.SaleProduct;
 import lombok.extern.slf4j.Slf4j;
@@ -90,7 +90,7 @@ public class ScanProductService {
                 SaleProduct saleProduct = saleProductOptional.get();
                 saleProduct.setCurrentPrice(product.getPrice());
                 if(difference > saleProduct.getDiscount()) {
-                    EmailEvent.areNewSales = true;
+                    AlertEvent.areNewSales = true;
                 }
                 saleProduct.setDiscount(difference);
                 saleProduct.setCreated(Instant.now());
@@ -108,7 +108,7 @@ public class ScanProductService {
                             product.getHref(),
                             difference);
                 }
-                EmailEvent.areNewSales = true;
+                AlertEvent.areNewSales = true;
                 return (SaleProduct) saveSaleProduct.invoke(saleProductRepository, saleProduct);
             }
         } else {

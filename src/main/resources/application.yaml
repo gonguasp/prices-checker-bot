@@ -28,8 +28,23 @@ config:
     - https://www.amazon.es/Gigabyte-Z590-Gaming-Placa-Express/dp/B08XNKLGS4/ref=sr_1_1?__mk_es_ES=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=2HDRPVXQINZ21&keywords=Gigabyte+Z590+GAMING+X&qid=1648325003&s=computers&sprefix=gigabyte+z590+gaming+x%2Ccomputers%2C100&sr=1-1
     - https://www.amazon.es/Corsair-Semitorre-Templado-Ventiladores-Incluidos/dp/B08C74694Z/ref=sr_1_1?__mk_es_ES=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=3EXGYZ0CNMSJY&keywords=Corsair%2B4000D%2BAirflow&qid=1648335136&sprefix=corsair%2B4000d%2Bairflow%2Caps%2C101&sr=8-1&th=1
 
+alert:
+  email: true
+  telegram: true
 
+telegram:
+  bot:
+    name: prices_checker_bot
+    token: 5126209841:AAHZoR6oiGb_-ZlLYmxLU2Y6dSx7F42giqc
+    chat-id: -721401840
+    initialDelay: 5
+    period: 10
+    delayCanceler: 1
 
+email:
+  email: cristiangonzalezguasp@gmail.com
+  token: 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
+  subject: Alert sale product/s
 
 # debug sql
 #spring.jpa.properties.hibernate.show_sql=true
