@@ -4,7 +4,7 @@ import com.bot.eshop.amazon.model.AmazonProduct;
 import com.bot.eshop.amazon.model.AmazonSaleProduct;
 import com.bot.eshop.pccomponentes.model.PcComponentesProduct;
 import com.bot.eshop.pccomponentes.model.PcComponentesSaleProduct;
-import com.bot.event.EmailEvent;
+import com.bot.event.AlertEvent;
 import com.bot.model.Product;
 import com.bot.model.SaleProduct;
 import lombok.extern.slf4j.Slf4j;
@@ -72,16 +72,16 @@ public class ScanProductService {
 
         if(productOptional.isPresent()) {
             Product productSaved = productOptional.get();
-            log.info(productSaved.toString());
             double difference = productSaved.getPrice() - product.getPrice();
             Optional<SaleProduct> saleProductOptional = (Optional<SaleProduct>) findByNameProductSale.invoke(saleProductRepository, product.getName());
-            manageSaleProduct(difference, saleProductOptional, product, saleProductRepository);
+            SaleProduct saleProduct = manageSaleProduct(difference, saleProductOptional, product, saleProductRepository);
+            log.info(saleProduct != null ? saleProduct.formatToString() : productSaved.toString());
         } else {
             log.info(saveProduct.invoke(productRepository, product).toString());
         }
     }
 
-    protected void manageSaleProduct(double difference, Optional<SaleProduct> saleProductOptional, Product product, Object saleProductRepository) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    protected SaleProduct manageSaleProduct(double difference, Optional<SaleProduct> saleProductOptional, Product product, Object saleProductRepository) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Method saveSaleProduct = JpaRepository.class.getMethod(save, Object.class);
         Method removeByIdProductSale = saleProductRepository.getClass().getMethod(removeById, long.class);
 
@@ -90,11 +90,11 @@ public class ScanProductService {
                 SaleProduct saleProduct = saleProductOptional.get();
                 saleProduct.setCurrentPrice(product.getPrice());
                 if(difference > saleProduct.getDiscount()) {
-                    EmailEvent.areNewSales = true;
+                    AlertEvent.areNewSales = true;
                 }
                 saleProduct.setDiscount(difference);
                 saleProduct.setCreated(Instant.now());
-                saveSaleProduct.invoke(saleProductRepository, saleProduct);
+                return (SaleProduct) saveSaleProduct.invoke(saleProductRepository, saleProduct);
             } else {
                 SaleProduct saleProduct;
                 if(product instanceof PcComponentesProduct) {
@@ -108,13 +108,14 @@ public class ScanProductService {
                             product.getHref(),
                             difference);
                 }
-                saveSaleProduct.invoke(saleProductRepository, saleProduct);
-                EmailEvent.areNewSales = true;
+                AlertEvent.areNewSales = true;
+                return (SaleProduct) saveSaleProduct.invoke(saleProductRepository, saleProduct);
             }
         } else {
             if(saleProductOptional.isPresent()) {
                 removeByIdProductSale.invoke(saleProductRepository, saleProductOptional.get().getId());
             }
+            return null;
         }
     }
 }

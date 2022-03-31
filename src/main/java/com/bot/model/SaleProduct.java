@@ -49,4 +49,10 @@ public class SaleProduct extends RepresentationModel<SaleProduct> {
                 href
         );
     }
+
+    public String formatToString() {
+        return System.lineSeparator() + this.name +
+                System.lineSeparator() + this.currentPrice + " €" +
+                System.lineSeparator() + this.discount + " €";
+    }
 }

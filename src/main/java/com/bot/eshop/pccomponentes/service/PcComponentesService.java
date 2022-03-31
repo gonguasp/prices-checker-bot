@@ -74,6 +74,12 @@ public class PcComponentesService extends ScanProductService {
         }
     }
 
+    public boolean reset() {
+        pcComponentesProductRepository.deleteAll();
+        pcComponentesSaleProductRepository.deleteAll();
+        return true;
+    }
+
     private WebDriver getDriver(String url, boolean focused, boolean waitForJQuery) {
         WebDriver driver = new ChromeDriver(loadChromeConfig());
 

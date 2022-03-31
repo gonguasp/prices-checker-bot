@@ -25,4 +25,9 @@ public class AmazonController {
     public List<AmazonSaleProduct> getSales() {
         return amazonService.getSales();
     }
+
+    @GetMapping("/amazon/reset")
+    public boolean reset() {
+        return amazonService.reset();
+    }
 }

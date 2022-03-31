@@ -67,4 +67,10 @@ public class AmazonService extends ScanProductService {
 
         driver.quit();
     }
+
+    public boolean reset() {
+        amazonProductRepository.deleteAll();
+        amazonSaleProductRepository.deleteAll();
+        return true;
+    }
 }

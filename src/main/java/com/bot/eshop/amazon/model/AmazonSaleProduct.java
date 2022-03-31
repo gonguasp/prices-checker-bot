@@ -31,8 +31,4 @@ public class AmazonSaleProduct extends SaleProduct {
     public String toString() {
         return this.currentPrice + " € " + this.name + " " + this.href;
     }
-
-    public String toStringHtml() {
-        return "<p> - " + this.toString() + "</p>";
-    }
 }

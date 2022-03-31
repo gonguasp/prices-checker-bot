@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class EmailEventPublisher {
+public class AlertEventPublisher {
 
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
     public void publishCustomEvent(final String message) {
         log.info("Publishing custom event.");
-        EmailEvent customSpringEvent = new EmailEvent(this, message);
+        AlertEvent customSpringEvent = new AlertEvent(this, message);
         applicationEventPublisher.publishEvent(customSpringEvent);
     }
 }

@@ -4,8 +4,8 @@ import com.bot.BotApplication;
 import com.bot.config.Endpoints;
 import com.bot.eshop.amazon.controller.AmazonController;
 import com.bot.eshop.pccomponentes.controller.PcComponentesController;
-import com.bot.event.EmailEvent;
-import com.bot.event.EmailEventPublisher;
+import com.bot.event.AlertEvent;
+import com.bot.event.AlertEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -32,7 +30,7 @@ public class IndexService {
     private AmazonController amazonController;
 
     @Autowired
-    private EmailEventPublisher emailEventPublisher;
+    private AlertEventPublisher alertEventPublisher;
 
     public Map<String, List<String>> fillEndpoints() {
         if(Endpoints.endpoints == null) {
@@ -57,28 +55,37 @@ public class IndexService {
         return Endpoints.endpoints;
     }
 
+    public boolean resetAll() {
+        pcComponentesController.reset();
+        amazonController.reset();
+        return true;
+    }
+
     @Scheduled(fixedDelay = 600000, initialDelay = 1000)
-    public String executeAll() throws InvocationTargetException, IllegalAccessException, IOException {
-        final String notExecuteMethod = "getSales";
-        for (Method method : pcComponentesController.getClass().getDeclaredMethods()) {
-            if(!notExecuteMethod.equals(method.getName())) {
+    public String executeAll() throws InvocationTargetException, IllegalAccessException {
+        final List<String> notExecuteMethods = List.of("getSales", "reset");
+        Method[] methods = Arrays.asList(pcComponentesController.getClass().getDeclaredMethods())
+                .stream()
+                .sorted(Comparator.comparing(Method::getName))
+                .toArray(Method[]::new);
+        for (Method method : methods) {
+            if(!notExecuteMethods.contains(method.getName())) {
                 method.invoke(pcComponentesController);
             }
         }
 
         for (Method method : amazonController.getClass().getDeclaredMethods()) {
-            if(!notExecuteMethod.equals(method.getName())) {
+            if(!notExecuteMethods.contains(method.getName())) {
                 method.invoke(amazonController);
             }
         }
 
-        emailEventPublisher.publishCustomEvent("");
+        alertEventPublisher.publishCustomEvent("");
         return "DONE";
     }
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Europe/Paris")
     public void resetEmailSends() {
-        EmailEvent.areNewSales = true;
+        AlertEvent.areNewSales = true;
     }
-
 }

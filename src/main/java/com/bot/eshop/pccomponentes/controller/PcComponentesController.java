@@ -49,4 +49,9 @@ public class PcComponentesController {
     public List<PcComponentesSaleProduct> getSales() {
         return pcComponentesService.getSales();
     }
+
+    @GetMapping("/pccomponentes/reset")
+    public boolean reset() {
+        return pcComponentesService.reset();
+    }
 }
