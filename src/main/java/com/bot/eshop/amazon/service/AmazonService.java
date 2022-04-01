@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,15 +55,19 @@ public class AmazonService extends ScanProductService {
             waitingForOrderingProducts(driver, true);
             log.info("Javascript finished");
 
-            manageProduct(new AmazonProduct(
-                    driver.findElement(By.id("productTitle")).getText(),
-                    Double.parseDouble(
-                            driver.findElement(By.cssSelector("[class$='riceToPay']")).getText()
-                                    .replace("€", "")
-                                    .replace(",", ".")
-                                    .replace("\n", ".")),
-                            url),
-                    amazonProductRepository, amazonSaleProductRepository);
+            try {
+                manageProduct(new AmazonProduct(
+                                driver.findElement(By.id("productTitle")).getText(),
+                                Double.parseDouble(
+                                        driver.findElement(By.cssSelector("[class$='riceToPay']")).getText()
+                                                .replace("€", "")
+                                                .replace(",", ".")
+                                                .replace("\n", ".")),
+                                url),
+                        amazonProductRepository, amazonSaleProductRepository);
+            } catch (NoSuchElementException e) {
+                log.error("Component " + url + " is not anymore available");
+            }
         }
 
         driver.quit();
