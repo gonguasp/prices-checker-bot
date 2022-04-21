@@ -39,7 +39,7 @@ public class PcComponentesService extends ScanProductService {
     public void scanProducts(String urlPart) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         String url = config.getPcComponentes().get(urlPart).toString();
         WebDriver driver = getDriver(url, false, true);
-        manageProducts(driver.findElements(By.className("col-xs-6")));
+        manageProducts(driver.findElements(By.className("col-xs-6")), url);
         driver.quit();
     }
 
@@ -99,19 +99,23 @@ public class PcComponentesService extends ScanProductService {
         return driver;
     }
 
-    protected void manageProducts(List<WebElement> webElementList) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    protected void manageProducts(List<WebElement> webElementList, String url) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         for (WebElement divElement : webElementList) {
             WebElement articleElement = divElement.findElement(By.tagName("article"));
             String productName = articleElement.getAttribute("data-name");
 
-            manageProduct(new PcComponentesProduct(
-                    productName,
-                    Double.parseDouble(articleElement.getAttribute("data-price")),
-                    articleElement.getAttribute("data-brand"),
-                    articleElement.getAttribute("data-category"),
-                    articleElement.findElement(By.tagName("a")).getAttribute("href"),
-                    false
-            ), pcComponentesProductRepository, pcComponentesSaleProductRepository);
+            try {
+                manageProduct(new PcComponentesProduct(
+                        productName,
+                        Double.parseDouble(articleElement.getAttribute("data-price")),
+                        articleElement.getAttribute("data-brand"),
+                        articleElement.getAttribute("data-category"),
+                        articleElement.findElement(By.tagName("a")).getAttribute("href"),
+                        false
+                ), pcComponentesProductRepository, pcComponentesSaleProductRepository);
+            } catch (NoSuchElementException e) {
+                log.error("Component " + url + " is not anymore available");
+            }
         }
     }
 }
